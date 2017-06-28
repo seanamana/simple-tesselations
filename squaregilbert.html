@@ -1,0 +1,196 @@
+<html>
+
+<head>
+<style>
+html, body {
+width: 100%;
+height: 100%;
+margin: 0px;
+border: 0;
+overflow: hidden; /*  Disable scrollbars */
+display: block;  /* No floating content on sides */
+}
+</style>
+</head>
+
+<body >
+<canvas id='c' style='position:absolute; left:0px; top:0px;'>
+</canvas>
+
+<script>
+window.onload = initialize;
+
+class Point
+{
+	constructor(x,y,angle) {
+		this.x = x;
+		this.y = y;
+		this.angle = angle;
+		this.done1 = false;
+		this.done2 = false;
+		this.len1 = 0;
+		this.len2 = 0;
+	}
+}
+
+function intersects(a, b, c, d)
+{
+	var denominator = ((b.x - a.x) * (d.y - c.y)) - ((b.y - a.y) * (d.x - c.x));
+	var numerator1 = ((a.y - c.y) * (d.x - c.x)) - ((a.x - c.x) * (d.y - c.y));
+	var numerator2 = ((a.y - c.y) * (b.x - a.x)) - ((a.x - c.x) * (b.y - a.y));
+	
+	if (denominator == 0)
+	{
+		//console.log(numerator1,numerator2);
+		return (numerator1 == 0 && numerator2 == 0);
+		
+	}
+	
+	var r = numerator1 / denominator;
+	var s = numerator2 / denominator;
+	
+	//console.log(denominator,numerator1,numerator2,r,s);
+	
+	return (r >= 0 && r <= 1 && s >= 0 && s <= 1);
+}
+
+var particles = [];
+
+
+var
+// Obtain a reference to the canvas element using its id.
+htmlCanvas = document.getElementById('c'),
+// Obtain a graphics context on the canvas element for drawing.
+context = htmlCanvas.getContext('2d');
+
+//var particles = [];	           
+
+// Start listening to resize events and draw canvas.
+
+
+function initialize() {
+	// Register an event listener to call the resizeCanvas() function 
+	// each time the window is resized.
+	window.addEventListener('resize', resizeCanvas, false);
+	// Draw canvas border for the first time.
+	resizeCanvas();
+	
+}
+
+
+function redraw() {	
+	
+	
+	//context.clearRect(0, 0, htmlCanvas.width, htmlCanvas.height);
+	
+	for (i = 0; i < particles.length; i++)
+	{
+		if (!particles[i].done1)
+		{
+			var a = particles[i];
+			var b = new Point(particles[i].x + (particles[i].len1 + 1) * Math.cos(particles[i].angle),particles[i].y + (particles[i].len1 + 1) * Math.sin(particles[i].angle),0);
+			
+			//console.log(a,b);
+			
+			if (b.x < 0 || b.x > htmlCanvas.width || b.y < 0 || b.y > htmlCanvas.height)
+			{
+				//console.log("out of bounds true");
+				particles[i].done1 = true;
+			}
+			
+			for (j = 0; j < particles.length; j++)
+			{
+				if (i != j)
+				{
+					var c = new Point(particles[j].x,particles[j].y,0);
+					var d = new Point(particles[j].x + particles[j].len1 * Math.cos(particles[j].angle),particles[j].y + particles[j].len1 * Math.sin(particles[j].angle),0);
+					
+					//console.log(a,b,c,d);
+										
+					if (intersects(a,b,c,d))
+					{
+						particles[i].done1 = true;
+					}
+					
+					d = new Point(particles[j].x + particles[j].len2 * Math.cos(particles[j].angle + 3.14159),particles[j].y + particles[j].len2 * Math.sin(particles[j].angle + 3.14159),0);
+					
+					if (intersects(a,b,c,d))
+					{
+						particles[i].done1 = true;
+					}
+				}
+			}
+			if (!particles[i].done1)
+			{
+				particles[i].len1 = particles[i].len1 + 1;
+			}
+		}
+		if (!particles[i].done2)
+		{
+			var a = particles[i];
+			var b = new Point(particles[i].x + (particles[i].len2 + 1) * Math.cos(particles[i].angle + 3.14159),particles[i].y + (particles[i].len2 + 1) * Math.sin(particles[i].angle + 3.14159),0);
+			
+			if (b.x < 0 || b.x > htmlCanvas.width || b.y < 0 || b.y > htmlCanvas.height)
+			{
+				particles[i].done2 = true;
+			}
+			
+			for (j = 0; j < particles.length; j++)
+			{
+				if (i != j)
+				{
+					var c = new Point(particles[j].x,particles[j].y,0);
+					var d = new Point(particles[j].x + particles[j].len1 * Math.cos(particles[j].angle),particles[j].y + particles[j].len1 * Math.sin(particles[j].angle),0);
+					
+					if (intersects(a,b,c,d))
+					{
+						particles[i].done2 = true;
+					}
+					
+					d = new Point(particles[j].x + particles[j].len2 * Math.cos(particles[j].angle + 3.14159),particles[j].y + particles[j].len2 * Math.sin(particles[j].angle + 3.14159),0);
+					
+					if (intersects(a,b,c,d))
+					{
+						particles[i].done2 = true;
+					}
+				}
+			}
+			if (!particles[i].done2)
+			{
+				particles[i].len2 = particles[i].len2 + 1;
+			}
+		}
+		
+		context.beginPath();
+		context.moveTo(particles[i].x + particles[i].len1 * Math.cos(particles[i].angle),particles[i].y + particles[i].len1 * Math.sin(particles[i].angle));
+		context.lineTo(particles[i].x + particles[i].len2 * Math.cos(particles[i].angle + 3.14159),particles[i].y + particles[i].len2 * Math.sin(particles[i].angle + 3.14159));
+		context.stroke();
+		
+	}
+	
+	requestAnimationFrame(redraw);	
+}
+
+// Runs each time the DOM window resize event fires.
+// Resets the canvas dimensions to match window,
+// then draws the new borders accordingly.
+function resizeCanvas() {
+	htmlCanvas.width = window.innerWidth;
+	htmlCanvas.height = window.innerHeight;
+	
+	particles = [];
+	
+	for (i = 0; i < 100; i++)
+	{
+		particles.push(new Point(htmlCanvas.width * Math.random(),htmlCanvas.height * Math.random(),Math.round(Math.random()) * 3.14159 / 2));
+	}
+	
+	redraw();
+}
+
+initialize();
+
+</script>
+
+</body>
+</html>
