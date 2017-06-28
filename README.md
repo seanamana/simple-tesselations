@@ -2,6 +2,8 @@ This is a stupid implementation of a Gilbert tesselation which in Wikipedish is 
 
 Redraws on window resize, which in practice mostly means that it's fun to put on your phone and tip around.
 
+Also included is a virtually identical Processing sketch that I used to mock it up before messing with JavaScript implementation and associated finicky stuff.
+
 Window resize code from:
 https://stackoverflow.com/questions/1664785/resize-html5-canvas-to-fit-window
 (which in turn references http://htmlcheats.com/html/resize-the-html5-canvas-dyamically/)
