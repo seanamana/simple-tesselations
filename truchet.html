@@ -23,8 +23,7 @@ window.onload = initialize;
 width = 0;
 height = 0;
 tilesize = 0;
-row = 0;
-col = -1;
+
 
 var
 // Obtain a reference to the canvas element using its id.
@@ -80,6 +79,9 @@ function resizeCanvas() {
 	width = htmlCanvas.width;
 	height = htmlCanvas.height;
 	tilesize = Math.min(width,height) / 25;
+	
+	row = 0;
+	col = -1;
 	
 	redraw();
 }
