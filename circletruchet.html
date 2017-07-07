@@ -31,6 +31,7 @@ var
 htmlCanvas = document.getElementById('c'),
 // Obtain a graphics context on the canvas element for drawing.
 context = htmlCanvas.getContext('2d');
+context.lineWidth = 5;
 context.fillStyle = '#000';
 //var particles = [];	           
 // Start listening to resize events and draw canvas.
@@ -52,13 +53,13 @@ function redraw() {
 		if (col < width / tilesize)
 		{
 			context.beginPath();
-			cornerx = Math.floor(Math.random() * 2);
-			cornery = Math.floor(Math.random() * 2);
-			context.moveTo(col * tilesize + cornerx * tilesize, row * tilesize + cornery * tilesize);
-			context.lineTo(col * tilesize + ((cornerx + 1) % 2) * tilesize, row * tilesize + cornery * tilesize);
-			context.lineTo(col * tilesize + cornerx * tilesize, row * tilesize + ((cornery + 1) % 2) * tilesize);
-			context.closePath();
-			context.fill();
+			circleflip = Math.floor(Math.random() * 2);
+			context.moveTo(col * tilesize, (row + 0.5) * tilesize );
+			context.arcTo((col + 0.5) * tilesize,(row + 0.5) * tilesize,(col + 0.5) * tilesize, (row + circleflip) * tilesize, tilesize / 2);
+			context.stroke();
+			context.moveTo((col + 1) * tilesize, (row + 0.5) * tilesize);
+			context.arcTo((col + 0.5) * tilesize,(row + 0.5) * tilesize,(col + 0.5) * tilesize, (row + ((circleflip + 1) % 2)) * tilesize, tilesize / 2);
+			context.stroke();
 			col++;
 		}
 		else
