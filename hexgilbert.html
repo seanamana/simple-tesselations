@@ -182,7 +182,7 @@ function resizeCanvas() {
 	
 	for (i = 0; i < 100; i++)
 	{
-		particles.push(new Point(htmlCanvas.width * Math.random(),htmlCanvas.height * Math.random(),Math.round(Math.random()) * 3.14159 / 3));
+		particles.push(new Point(htmlCanvas.width * Math.random(),htmlCanvas.height * Math.random(),Math.round(6 * Math.random()) * 3.14159 / 3));
 	}
 	
 	redraw();
